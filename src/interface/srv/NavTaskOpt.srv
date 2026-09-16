@@ -1,0 +1,7 @@
+string nav_opt
+string NAV_OPT_STOP="STOP"
+string NAV_OPT_PAUSE="PAUSE"
+string NAV_OPT_RESUME="RESUME"
+---
+int32 ret
+string reason

@@ -1,0 +1,97 @@
+/**:
+    ros__parameters:
+        # LIO-SAM park dataset: Velodyne VLP-16 + Microstrain IMU (500 Hz) + RTK GPS (5 Hz, sigma ~ 0.08 m)
+        # Uses /imu_correct (base_link frame, z up) rather than /imu_raw (imu_link, z down).
+        use_imu_as_input: False
+        prop_at_freq_of_imu: False
+        check_satu: True
+        init_map_size: 10
+        point_filter_num: 4
+        space_down_sample: True
+        filter_size_surf: 0.5
+        filter_size_map: 0.5
+        ivox_nearby_type: 6
+        runtime_pos_log_enable: False
+
+        common:
+            lid_topic: "/points_raw"
+            imu_topic: "/imu_correct"
+            con_frame: False
+            con_frame_num: 1
+            cut_frame: False
+            cut_frame_time_interval: 0.1
+            time_diff_lidar_to_imu: 0.0
+
+        prior_pcd:
+            enable: False
+            prior_pcd_map_path: ""
+            init_pose: [ 0.0, 0.0, 0.0 ]
+
+        preprocess:
+            lidar_type: 2                                   # VELO16
+            scan_line: 16
+            timestamp_unit: 0                               # velodyne's time field is in seconds
+            blind: 2.0
+
+
+        outlier_filter:
+            method: 1                                       # 0=off 1=voxel count 2=PCL radius outlier
+            voxel_res: 0.3
+            min_pts_per_voxel: 2
+            max_range: 10.0
+
+        mapping:
+            imu_en: True
+            imu_init_timeout: 1.0
+            extrinsic_est_en: False
+            imu_time_inte: 0.002                            # /imu_correct measures ~492 Hz
+            lidar_time_inte: 0.1
+            satu_acc: 30.0
+            satu_gyro: 35.0
+            acc_norm: 9.81
+            lidar_meas_cov: 0.01
+            acc_cov_output: 500.0
+            gyr_cov_output: 1000.0
+            b_acc_cov: 0.0001
+            b_gyr_cov: 0.0001
+            imu_meas_acc_cov: 0.1
+            imu_meas_omg_cov: 0.1
+            gyr_cov_input: 0.01
+            acc_cov_input: 0.1
+            plane_thr: 0.1
+            match_s: 81.0
+            ivox_grid_resolution: 2.0
+            gravity: [0.0, 0.0, -9.810]
+            gravity_init: [0.0, 0.0, -9.810]
+            # /imu_correct is already in base_link and aligned with the velodyne; the only difference is the lidar sitting above the IMU
+            extrinsic_T: [ 0.0, 0.0, 0.0]
+            extrinsic_R: [ 1.0, 0.0, 0.0,
+                           0.0, 1.0, 0.0,
+                           0.0, 0.0, 1.0]
+
+        odometry:
+            publish_odometry_without_downsample: False
+            imu_propagate_en: True                          # publish /odom propagated at the IMU rate
+
+        publish:
+            path_en: True
+            scan_publish_en: True
+            scan_bodyframe_pub_en: False
+            tf_send_en: True
+
+        pcd_save:
+            pcd_save_en: False
+            interval: -1
+
+        gnss:
+            enable: True
+            topic: "/gps/fix"
+            use_elevation: True                          
+            cov_threshold: 30.0
+            time_tol: 0.15                                  # measurements are extrapolated to the state time by velocity, so this can be loose
+            sigma_floor: 0.05
+            sigma_scale: 1.0
+            sigma_max: 1.0
+
+        loop_closure:
+            enable: False

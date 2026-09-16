@@ -1,0 +1,11 @@
+# Body attitude velocity commands. Units follow the ZSL-1w SDK.
+float32 roll_vel
+float32 pitch_vel
+float32 yaw_vel
+float32 height_vel
+
+# Command duration in seconds. Values <= 0 use the driver's body_cmd_timeout.
+float32 duration_sec
+---
+bool success
+string message

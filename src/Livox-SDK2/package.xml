@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>Livox-SDK2</name>
+  <version>1.2.5</version>
+  <description>
+    Livox lidar SDK, built from this fork so the driver links the same source the
+    workspace ships rather than whatever happens to sit in /usr/local/lib.
+    Added for colcon; not present upstream, so it will not conflict on merge.
+  </description>
+  <maintainer email="none@example.com">workspace</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>cmake</buildtool_depend>
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>slam_log</name>
+  <version>0.1.0</version>
+  <description>glog-backed logging shared by the workspace</description>
+  <maintainer email="toe@example.com">toe</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>libgoogle-glog-dev</depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

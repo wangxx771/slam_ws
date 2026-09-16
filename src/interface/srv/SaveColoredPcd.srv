@@ -1,0 +1,4 @@
+string save_path  # 点云保存路径（为空时使用配置文件中的默认路径）
+---
+bool success      # 保存是否成功
+string message    # 保存结果信息

@@ -1,0 +1,121 @@
+/**:
+    ros__parameters:
+        use_imu_as_input: False                             # output model (Point-LIO's main mode)
+        prop_at_freq_of_imu: True                           # IMU present, so propagate covariance at the IMU rate
+        check_satu: True
+        init_map_size: 10
+        point_filter_num: 3
+        space_down_sample: True
+        filter_size_surf: 0.2
+        filter_size_map: 0.3
+        ivox_nearby_type: 6                                 # 0, 6, 18, 26
+        runtime_pos_log_enable: True                        # log timing and map size, to spot stalls
+
+        common:
+            lid_topic: "/livox/lidar"
+            imu_topic: "/livox/imu"
+            con_frame: False
+            con_frame_num: 1
+            cut_frame: False
+            cut_frame_time_interval: 0.1
+            time_diff_lidar_to_imu: 0.0                     # CARLA's lidar and IMU share a clock, so no alignment is needed
+
+        prior_pcd:
+            enable: False
+            prior_pcd_map_path: ""
+            init_pose: [ 0.0, 0.0, 0.0 ]
+
+        preprocess:
+            lidar_type: 1                                   # 1 = Livox (CustomMsg)
+            scan_line: 32                                   # carla_to_bag.py splits pitch into 32 lines
+            timestamp_unit: 3
+            blind: 1.0                                      # occlusion by CARLA's own vehicle body
+            det_range: 150.0                                # CARLA's lidar reaches ~150 m in practice
+            tag_intensity_filter: false
+            min_intensity: 0.0
+
+        outlier_filter:
+            method: 1                                       # 0=off 1=voxel count 2=PCL radius outlier
+            voxel_res: 0.3
+            min_pts_per_voxel: 2
+            max_range: 10.0                                 
+            radius: 0.5
+            min_neighbors: 3
+
+        mapping:
+            imu_en: True                                    # CARLA recorded IMU at 50 Hz
+
+            # CARLA vehicles have a settling transient at spawn: for the first 2 s
+            # |a| reads 10.124 (truth 9.81) with a spurious 0.053 rad/s rotation.
+            # The default stillness test rejects that stretch entirely (564
+            # rejected, 103 kept), taking the vertical-axis tilt from 38.14 deg to
+            # 1.10 deg and halving ATE. The defaults are fine and not overridden
+            # here; this only records why the dataset is sensitive to them.
+            extrinsic_est_en: False
+            imu_time_inte: 0.02                             # CARLA IMU 50Hz
+            lidar_time_inte: 0.1                            # published per 72 deg sector, 10 Hz
+            satu_acc: 35.0                                  # m/s^2, matching acc_norm=9.81
+            satu_gyro: 35.0
+            acc_norm: 9.81
+            lidar_meas_cov: 0.01
+            acc_cov_output: 500.0
+            gyr_cov_output: 1000.0
+            b_acc_cov: 0.0001
+            b_gyr_cov: 0.0001
+            imu_meas_acc_cov: 0.01
+            imu_meas_omg_cov: 0.01
+            gyr_cov_input: 0.1
+            acc_cov_input: 0.1
+            plane_thr: 0.1
+            match_s: 81.0
+            ivox_grid_resolution: 2.0
+            gravity: [ 0.0, 0.0, -9.810 ]
+            gravity_init: [ 0.0, 0.0, -9.810 ]              # assumes the lidar is roughly level at power-on
+            extrinsic_T: [ 0.0, 0.0, 0.0 ]
+            extrinsic_R: [ 1.0, 0.0, 0.0,
+                           0.0, 1.0, 0.0,
+                           0.0, 0.0, 1.0 ]
+
+        odometry:
+            publish_odometry_without_downsample: false
+            imu_propagate_en: false                         # CARLA has a 50 Hz IMU, but propagating at 50 Hz gains little
+
+        publish:
+            path_en: True
+            scan_publish_en: True
+            scan_bodyframe_pub_en: True
+            tf_send_en: True
+
+        pcd_save:
+            pcd_save_en: True                              # enable when the full map is needed
+            output_dir: ""                                  # empty = <working directory at launch>/PCD
+            file_name: "carla_map.pcd"                    # filename of the final full map when the interval is -1
+            interval: -1
+
+        loop_closure:
+            enable: false                                   # off by default; enable with -p when verifying
+            keyframe_add_dist: 1.0                          # m
+            keyframe_add_angle: 0.2                         # rad
+            search_radius: 10.0                             # m, search radius over historical keyframes
+            search_time_diff: 30.0                          # s, minimum time gap for a candidate frame
+            search_num: 25                                  # frames taken before and after for the historical submap
+            fitness_score: 0.3                              # ICP fitness upper bound
+            icp_leaf_size: 0.4
+            keep_factors: true                              # keep between factors so closures propagate along the chain
+            odom_sigma_rot: 0.05
+            odom_sigma_trans: 0.1
+            opt_iters: 6
+            opt_iters_on_loop: 10
+            gnss_opt_every: 2
+
+        gnss:
+            enable: false
+            topic: "/gnss"
+            use_elevation: true
+            cov_threshold: 2.0
+            min_travel: 1.0
+            time_tol: 0.05
+            extrinsic_T: [ 0.0, 0.0, 0.0 ]
+            extrinsic_R: [ 1.0, 0.0, 0.0,
+                           0.0, 1.0, 0.0,
+                           0.0, 0.0, 1.0 ]

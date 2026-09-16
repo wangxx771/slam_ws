@@ -1,0 +1,10 @@
+string status
+string STATUS_IDEL="IDE"
+string STATUS_RUNNING="RUNNING"
+string STATUS_PAUSE="PAUSING"
+string STATUS_ERROR="ERROR"
+string STATUS_PLAN="PLANNING"
+string STATUS_COMPLETED="COMPLETED"
+string STATUS_ABORTED="ABORTED"
+string error
+int32 task_id

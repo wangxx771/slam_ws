@@ -1,0 +1,127 @@
+/**:
+    ros__parameters:
+        use_imu_as_input: false                             # Change to True to use IMU as input of Point-LIO
+        prop_at_freq_of_imu: True
+        check_satu: True
+        init_map_size: 10
+        point_filter_num: 3
+        space_down_sample: True
+        filter_size_surf: 0.3                               # was 0.2; with point_filter_num 3 and
+                                                            # nearby_type 0 the whole frame costs 3.2 ms
+                                                            # instead of 20.2, closure error unchanged
+        filter_size_map: 0.3                                # Options: 0.5, 0.3, 0.15, 0.1
+        ivox_nearby_type: 0                                 # Measured on two hardware bags: 6 -> 0 cut frame time 2.6x
+                                                            # (20.2 -> 7.9 ms) and closure error was slightly better, not
+                                                            # worse. Wider neighbourhoods search further at the same
+                                                            # resolution, so the fitted plane more often crosses a real
+                                                            # structure boundary. Options: 0, 6, 18, 26
+        runtime_pos_log_enable: false                      
+        common:
+            lid_topic: "livox/lidar"
+            imu_topic: "livox/imu"
+            con_frame: False                                # True: if you need to combine several LiDAR frames into one
+            con_frame_num: 1                                # the number of frames combined
+            cut_frame: False                                # True: if you need to cut one LiDAR frame into several subframes
+            cut_frame_time_interval: 0.1                    # should be integral fraction of 1 / LiDAR frequency
+            # Lidar-to-IMU time offset, calibrated by LiDAR_IMU_Init.
+            time_diff_lidar_to_imu: 0.0
+        prior_pcd:
+            enable: False
+            prior_pcd_map_path: ""
+            init_pose: [ 0.0, 0.0, 0.0 ]
+
+        preprocess:
+            lidar_type: 1                                   # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR
+            scan_line: 4
+            timestamp_unit: 3                               # the unit of time/t field in the PointCloud2 rostopic: 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
+            blind: 0.3
+            det_range: 100.0                               
+            tag_intensity_filter: false                      # drop Livox tag bit[3:2] low-confidence points (rain, fog, dust trails)
+            min_intensity: 0.0                              # reflectivity floor, 0 disables
+
+        outlier_filter:
+            method: 1                                       # 0=off 1=voxel count (~1-2ms) 2=PCL radius outlier (~10-25ms)
+            voxel_res: 0.3                                  # grid size for method=1 (m)
+            min_pts_per_voxel: 2                            # method=1 discards whole cells holding fewer points than this
+            max_range: 10.0                               
+            radius: 0.5                                     # method=2 only
+            min_neighbors: 3                                # method=2 only
+
+        loop_closure:
+            # In stairwells this trades horizontal accuracy for vertical; leave it off for pure stair mapping and on for navigation arenas.
+            enable: false                                    
+            search_radius: 6.0                            
+            search_radius_z: 2.0                          
+            search_time_diff: 25.0                       
+            fitness_score: 0.4                           
+            icp_leaf_size: 0.2                             
+            max_keyframes_per_cell: 3
+            sc_detect: false
+            sc_dist_thresh: 0.2
+            sc_ratio: 0.75
+            sc_num_candidates: 3
+            sc_exclude_recent: 30
+            backend_interval_ms: 50
+            max_pending: 64
+
+        mapping:
+            imu_en: True
+            imu_init_sec: 1.0            # minimum duration of stationary samples to collect
+            imu_init_acc_ratio: 0.035    # relative bound on ||a|-acc_norm|; above this counts as moving
+            imu_init_gyr_tol: 0.05       # rad/s, same idea
+            imu_init_timeout: 3.0        # cap on waiting for stillness; on timeout it stops filtering samples and logs ERROR
+            imu_init_dynamic: False
+            extrinsic_est_en: False                         # for aggressive motion, set this variable False
+            imu_time_inte: 0.005                            # = 1 / frequency of IMU
+            lidar_time_inte: 0.1
+            satu_acc: 3.0
+            satu_gyro: 35.0                                
+            acc_norm: 1.0
+            lidar_meas_cov: 0.01
+            acc_cov_output: 500.0
+            gyr_cov_output: 1000.0
+            b_acc_cov: 0.0001
+            b_gyr_cov: 0.0001
+            imu_meas_acc_cov: 0.01                          # 0.1 # 2
+            imu_meas_omg_cov: 0.01                          # 0.1 # 2
+            gyr_cov_input: 0.1                             # for IMU as input model
+            acc_cov_input: 0.1                             # for IMU as input model
+            plane_thr: 0.05
+            z_constraint:
+                enable: True
+                nz2_thresh: 0.12
+                weight: 2.5
+                max_tilt_deg: 3.0
+                max_hold_s: 60.0
+
+            match_s: 81.0
+            ivox_grid_resolution: 2.0
+            ivox_max_pts_per_node: 200
+            gravity: [ 0.0, 0.0, -9.810 ]                   # [0.0, 9.810, 0.0] # gravity to be aligned
+            gravity_init: [ 0.0, 0.0, -10.03 ]
+            extrinsic_T: [ -0.011, -0.02329, 0.04412 ]
+            extrinsic_R: [ 1.0, 0.0, 0.0,
+                           0.0, 1.0, 0.0,
+                           0.0, 0.0, 1.0 ]
+
+        odometry:
+            publish_odometry_without_downsample: false
+            imu_propagate_en: True
+
+        publish:
+            path_en: True                                   # False: close the path output
+            scan_publish_en: True                           # False: close all the point cloud output
+            scan_bodyframe_pub_en: True                     # True: output the point cloud scans in IMU-body-frame
+            tf_send_en: True                                # True: send transform from 'camera_init' to 'aft_mapped'
+
+        scan_context:
+            max_height: 10.0
+
+        pcd_save:
+            # Store only points within this range at capture time; 0 is unlimited. Distant structure seen at a glancing angle maps poorly.
+            max_range: 10.0
+            pcd_save_en: True
+            output_dir: ""                                 
+            run_subdir: True
+            file_name: "map.pcd"                   
+            interval: -1

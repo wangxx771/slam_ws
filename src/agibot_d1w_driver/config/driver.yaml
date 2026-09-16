@@ -1,0 +1,74 @@
+/**:
+  ros__parameters:
+    use_sim_time: false
+
+    local_ip: "192.168.168.120"
+    local_port: 43988
+    dog_ip: "192.168.168.168"
+
+    control_rate: 500.0
+
+    state_rate: 50.0
+    imu_rate: 200.0
+
+    connection_rate: 1.0
+
+    auto_stand_up: true
+    auto_stand_delay: 1.00
+    stand_settle_duration: 1.00
+
+    # 非零cmd_vel停止更新超过该时间后触发停车。
+    cmd_vel_timeout: 0.0
+
+    # 触发停车后连续发送零速度的时长。
+    # 到时后退出停车保持，允许后续cmd_vel重新运动。
+    stop_hold_duration: 0.5
+     #最后一条机身姿态命令到达后，最多继续执行 0.25 s
+    body_cmd_timeout: 0.25
+    #一个高层动作最多允许执行或等待 10 s
+    action_timeout: 10.0
+    #高层动作调用失败或尚未完成时，每隔 0.10 s 再尝试一次
+    action_retry_interval: 0.10
+    #切换步态前，先等待机器人稳定 0.30 s
+    gait_switch_settle: 0.30
+    #机器人还没有进入程序认为的 Move 模式时，非零速度命令最多每 0.20 s 向 SDK 尝试一次。
+    move_transition_retry_interval: 0.20
+
+    max_vx: 2.0
+    max_vy: 1.0
+    max_yaw_rate: 3.0
+
+    vx_deadband: 0.05
+    vy_deadband: 0.10
+    yaw_deadband: 0.10
+
+    max_roll_vel: 0.50
+    max_pitch_vel: 0.50
+    max_attitude_yaw_vel: 0.50
+    max_height_vel: 0.50
+
+    publish_odom: true
+    publish_imu: true
+    publish_joint_states: true
+    odom_frame: "odom"
+    base_frame: "body"
+
+    shutdown_zero_command_count: 20
+
+    # Ctrl+C关闭流程
+    shutdown_lie_down: true
+    shutdown_passive_after_lie_down: true
+
+    # 如果正在运动，先零速度停车0.5秒
+    shutdown_stop_duration: 0.50
+
+    # lieDown命令最长重试时间
+    shutdown_lie_down_timeout: 3.00
+    shutdown_lie_down_retry_interval: 0.10
+
+    # lieDown被接受后，等待机械动作完成
+    shutdown_lie_down_settle_duration: 2.00
+
+    # 然后再进入阻尼
+    shutdown_passive_timeout: 3.00
+    shutdown_passive_retry_interval: 0.10

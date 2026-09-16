@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>nav_common_cmake</name>
+  <version>0.1.0</version>
+  <description>
+    Shared CMake helpers for the workspace. Currently only FindPCLUnified, which
+    unifies how packages find PCL so that multiple PCL copies on one machine (the
+    system one and the ROS one) cannot be picked by different packages and clash
+    on symbols.
+
+    Packages used to include ../common/cmake by relative path, which silently fell
+    back to find_package(PCL) on a different machine or after moving a directory
+    level, leaving each package to pick its own. As a proper package it is located
+    by find_package(nav_common_cmake), independent of directory layout.
+  </description>
+  <maintainer email="dev@example.com">dev</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

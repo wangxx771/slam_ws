@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CycloneDDS profile for this stack. Enable with:
+
+    export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    export CYCLONEDDS_URI=file://$(ros2 pkg prefix point_lio)/share/point_lio/config/cyclonedds.xml
+
+The defaults are tuned for what this stack actually moves: 350-400 KB
+PointCloud2 and CustomMsg at 10 Hz, all on one host.
+
+Measured on this machine at 390 KB / 10 Hz, FastDDS and CycloneDDS were within
+noise of each other (publisher 0.5-0.9%, subscriber 0-2% of one core), so this
+profile is not a CPU fix - it exists so the two can be compared under identical
+conditions, and because CycloneDDS avoids the shared-memory segment leakage
+FastDDS shows here (35 of 45 /dev/shm segments were orphaned from dead
+processes).
+-->
+<CycloneDDS xmlns="https://cdds.io/config">
+  <Domain id="any">
+    <General>
+      <!-- Everything runs on one host. Restricting to loopback removes
+           multicast discovery traffic on every other interface, which is the
+           usual source of idle CPU in a container with several veth devices. -->
+      <Interfaces>
+        <NetworkInterface name="lo" priority="default" multicast="true"/>
+      </Interfaces>
+      <AllowMulticast>true</AllowMulticast>
+      <!-- A 390 KB sample fragments into ~64 KB datagrams by default; raising
+           the packet size cuts the fragment count roughly sixfold. -->
+      <MaxMessageSize>65500B</MaxMessageSize>
+      <FragmentSize>64000B</FragmentSize>
+    </General>
+
+    <Internal>
+      <!-- Point clouds are large and bursty. The default high-water mark
+           throttles the writer long before a 10 Hz cloud stream needs it. -->
+      <Watermarks>
+        <WhcHigh>2MB</WhcHigh>
+      </Watermarks>
+      <!-- Sending on the calling thread avoids a queue hop for large samples. -->
+      <SynchronousDeliveryPriorityThreshold>0</SynchronousDeliveryPriorityThreshold>
+    </Internal>
+
+    <Tracing>
+      <Verbosity>warning</Verbosity>
+      <OutputFile>stderr</OutputFile>
+    </Tracing>
+  </Domain>
+</CycloneDDS>

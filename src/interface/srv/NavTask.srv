@@ -1,0 +1,5 @@
+geometry_msgs/PoseStamped goal_pose
+int32 goal_id
+---
+int32 ret
+string reason
