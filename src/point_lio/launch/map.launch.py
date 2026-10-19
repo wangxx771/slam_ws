@@ -71,7 +71,7 @@ def launch_setup(context, *args, **kwargs):
     point_lio_dir = get_package_share_directory('point_lio')
     freedom_dir = get_package_share_directory('freedom')
 
-    cfg_file = os.path.join(point_lio_dir, 'config', 'mid360.yaml')
+    cfg_file = os.path.join(point_lio_dir, 'config', 'mid360s.yaml')
     freedom_cfg = os.path.join(freedom_dir, 'config', 'mid360_pointlio.yaml')
     rviz_cfg = os.path.join(point_lio_dir, 'rviz_cfg', 'loam_livox.rviz')
     remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
@@ -104,7 +104,7 @@ def launch_setup(context, *args, **kwargs):
         freedom_params.append(OUTDOOR)
 
     user_config_path = PathJoinSubstitution(
-        [FindPackageShare('livox_ros_driver2'), 'config', 'MID360_config.json'])
+        [FindPackageShare('livox_ros_driver2'), 'config', 'MID360s_config.json'])
 
 
     nodes = [

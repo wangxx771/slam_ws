@@ -614,7 +614,7 @@ void publish_frame_world(rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::Share
         else
             pcl::toROSMsg(*laserCloudWorld, laserCloudmsg);
 
-        laserCloudmsg.header.stamp = rclcpp::Time(lidar_end_time);
+        laserCloudmsg.header.stamp = get_ros_time(lidar_end_time);
         laserCloudmsg.header.frame_id = "camera_init";
         pubLaserCloudFullRes->publish(laserCloudmsg);
         publish_count -= PUBFRAME_PERIOD;
@@ -653,7 +653,7 @@ void publish_frame_body(rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::Shared
     PointCloudXYZI::Ptr laserCloudFullRes(feats_undistort);
     sensor_msgs::msg::PointCloud2 laserCloudmsg;
     pcl::toROSMsg(*feats_undistort, laserCloudmsg);
-    laserCloudmsg.header.stamp = rclcpp::Time(lidar_end_time);
+    laserCloudmsg.header.stamp = get_ros_time(lidar_end_time);
     laserCloudmsg.header.frame_id = "camera_init";
     pubLaserCloudFullRes_body->publish(laserCloudmsg);
 }
@@ -668,7 +668,7 @@ void publish_effect_world(rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::Shar
     }
     sensor_msgs::msg::PointCloud2 laserCloudFullRes3;
     pcl::toROSMsg(*laserCloudWorld, laserCloudFullRes3);
-    laserCloudFullRes3.header.stamp = rclcpp::Time(lidar_end_time);
+    laserCloudFullRes3.header.stamp = get_ros_time(lidar_end_time);
     laserCloudFullRes3.header.frame_id = "camera_init";
     pubLaserCloudEffect->publish(laserCloudFullRes3);
 }
@@ -677,7 +677,7 @@ void publish_map(const rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedP
 {
     sensor_msgs::msg::PointCloud2 laserCloudMap;
     pcl::toROSMsg(*featsFromMap, laserCloudMap);
-    laserCloudMap.header.stamp = rclcpp::Time(lidar_end_time);
+    laserCloudMap.header.stamp = get_ros_time(lidar_end_time);
     laserCloudMap.header.frame_id = "camera_init";
     pubLaserCloudMap->publish(laserCloudMap);
 }
@@ -723,6 +723,7 @@ void publish_odometry(const rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPt
     trans.transform.rotation.x = odomAftMapped.pose.pose.orientation.x;
     trans.transform.rotation.y = odomAftMapped.pose.pose.orientation.y;
     trans.transform.rotation.z = odomAftMapped.pose.pose.orientation.z;
+    trans.header.stamp = odomAftMapped.header.stamp;
     tf_br->sendTransform(trans);
 }
 
@@ -935,7 +936,7 @@ public:
         cout << "lidar_type: " << lidar_type << endl;
         cout << "LiDAR-only odometry starts." << endl;
 
-        path.header.stamp = rclcpp::Time(lidar_end_time);
+        path.header.stamp = get_ros_time(lidar_end_time);
         path.header.frame_id = "camera_init";
 
         _featsArray.reset(new PointCloudXYZI());
@@ -993,7 +994,7 @@ public:
             sub_pcl_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(lid_topic, 20, standard_pcl_cbk);
         }
 
-        sub_imu_ = this->create_subscription<sensor_msgs::msg::Imu>(imu_topic, 10, imu_cbk);
+        sub_imu_ = this->create_subscription<sensor_msgs::msg::Imu>(imu_topic, 2000, imu_cbk);
 
         pubIMU_sync = this->create_publisher<sensor_msgs::msg::Imu>("/li_init/imu/async", 20);
         pubLaserCloudFullRes = this->create_publisher<sensor_msgs::msg::PointCloud2>("/cloud_registered", 20);
@@ -1406,7 +1407,8 @@ void LaserMappingNode::timer_callback()
                 time_lag_IMU_wtr_lidar = Init_LI->get_total_time_lag(); // Compensate IMU's time in the buffer
                 for (int i = 0; i < imu_buffer.size(); i++)
                 {
-                    imu_buffer[i]->header.stamp = rclcpp::Time(rclcpp::Time(imu_buffer[i]->header.stamp).seconds() - time_lag_IMU_wtr_lidar);
+                    imu_buffer[i]->header.stamp =    get_ros_time(get_time_sec(imu_buffer[i]->header.stamp)
+                 - time_lag_IMU_wtr_lidar);
                 }
 
                 p_imu->imu_en = imu_en;

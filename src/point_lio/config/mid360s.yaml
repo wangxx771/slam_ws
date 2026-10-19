@@ -17,26 +17,14 @@
                                                             # structure boundary. Options: 0, 6, 18, 26
         runtime_pos_log_enable: false                      
         common:
-            lid_topic: "livox/lidar"
-            imu_topic: "livox/imu"
+            lid_topic: "/livox/lidar"
+            imu_topic: "/livox/imu"
             con_frame: False                                # True: if you need to combine several LiDAR frames into one
             con_frame_num: 1                                # the number of frames combined
             cut_frame: False                                # True: if you need to cut one LiDAR frame into several subframes
             cut_frame_time_interval: 0.1                    # should be integral fraction of 1 / LiDAR frequency
             # Lidar-to-IMU time offset, calibrated by LiDAR_IMU_Init.
-            time_diff_lidar_to_imu: 0.0
-        prior_pcd:
-            enable: False
-            prior_pcd_map_path: ""
-            init_pose: [ 0.0, 0.0, 0.0 ]
-
-        preprocess:
-            lidar_type: 1                                   # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR
-            scan_line: 4
-            timestamp_unit: 3                               # the unit of time/t field in the PointCloud2 rostopic: 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
-            blind: 0.3
-            det_range: 100.0                               
-            tag_intensity_filter: false                      # drop Livox tag bit[3:2] low-confidence points (rain, fog, dust trails)
+            time_diff_lidar_to_imu: -0.02185937
             min_intensity: 0.0                              # reflectivity floor, 0 disables
 
         outlier_filter:
@@ -99,10 +87,10 @@
             ivox_max_pts_per_node: 200
             gravity: [ 0.0, 0.0, -9.810 ]                   # [0.0, 9.810, 0.0] # gravity to be aligned
             gravity_init: [ 0.0, 0.0, -10.03 ]
-            extrinsic_T: [ -0.011, -0.02329, 0.04412 ]
-            extrinsic_R: [ 1.0, 0.0, 0.0,
-                           0.0, 1.0, 0.0,
-                           0.0, 0.0, 1.0 ]
+            extrinsic_T: [ -0.020831, -0.037487, 0.044192 ]
+            extrinsic_R: [ 0.999963, -0.003181, -0.008045,
+                           0.003203,  0.999991,  0.002617,
+                           0.008036, -0.002643,  0.999964 ]
 
         odometry:
             publish_odometry_without_downsample: false
@@ -115,7 +103,7 @@
             tf_send_en: True                                # True: send transform from 'camera_init' to 'aft_mapped'
 
         scan_context:
-            max_height: 10.0
+            max_height: 10.0e+9
 
         pcd_save:
             # Store only points within this range at capture time; 0 is unlimited. Distant structure seen at a glancing angle maps poorly.

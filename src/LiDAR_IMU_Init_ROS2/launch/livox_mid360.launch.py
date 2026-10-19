@@ -14,8 +14,8 @@ def generate_launch_description():
             "point_filter_num":2,
             "max_iteration":5,
             "cube_side_length": 2000.0,
-            "output_dir": "/home/toe/li_init_result",
-            "pointlio_yaml": "/home/toe/slam_ws/src/point_lio/config/mid360.yaml",
+            "output_dir": "/home/jetson/slam_ws/li_init_result",
+            "pointlio_yaml": "/home/jetson/slam_ws/src/point_lio/config/mid360s.yaml",
         },
         os.path.join(get_package_share_directory("lidar_imu_init"),"config","mid360.yaml")
         ]
